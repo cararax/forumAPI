@@ -2,13 +2,13 @@ spring:
   application:
     name: Forum API
 
-#Database
+  #Database
   datasource:
     url: jdbc:postgresql://localhost:5432/forumAPI
     username: postgres
     password: password
 
-#JPA properties
+  #JPA properties
   jpa:
     hibernate:
       ddl-auto: update

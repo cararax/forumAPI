@@ -35,7 +35,6 @@ public class TopicoController {
         } else {
             List<Topico> topicoList = topicoRepository.findByCurso_Nome(nomeCurso);
             return TopicoDto.converter(topicoList);
-
         }
     }
 
