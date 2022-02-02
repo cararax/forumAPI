@@ -1,16 +1,18 @@
 package com.carara.forumapi.controller;
 
-import com.carara.forumapi.Dto.TopicoDto;
-import com.carara.forumapi.model.Curso;
+import com.carara.forumapi.dto.TopicoDto;
+import com.carara.forumapi.form.TopicoForm;
 import com.carara.forumapi.model.Topico;
+import com.carara.forumapi.repository.CursoRepository;
 import com.carara.forumapi.repository.TopicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Arrays;
+import javax.transaction.Transactional;
+import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -18,17 +20,29 @@ import java.util.List;
 public class TopicoController {
 
     @Autowired
-    private TopicoRepository repository;
+    private TopicoRepository topicoRepository;
+    @Autowired
+    private CursoRepository cursoRepository;
 
     @GetMapping
     public List<TopicoDto> listAll(String nomeCurso) {
         if(nomeCurso==null){
-            List<Topico> topicoList = repository.findAll();
+            List<Topico> topicoList = topicoRepository.findAll();
             return TopicoDto.converter(topicoList);
         }else{
-            List<Topico> topicoList = repository.findByCurso_Nome(nomeCurso);
+            List<Topico> topicoList = topicoRepository.findByCurso_Nome(nomeCurso);
             return TopicoDto.converter(topicoList);
 
         }
+    }
+
+    @PostMapping
+    @Transactional
+    public ResponseEntity<TopicoDto> cadastrar(@RequestBody TopicoForm form, UriComponentsBuilder uriBuilder) {
+        Topico topico = form.converter(cursoRepository);
+        topicoRepository.save(topico);
+
+        URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
+        return ResponseEntity.created(uri).body(new TopicoDto(topico));
     }
 }

@@ -1,4 +1,4 @@
-package com.carara.forumapi.Dto;
+package com.carara.forumapi.dto;
 
 import com.carara.forumapi.model.Topico;
 import lombok.Data;
