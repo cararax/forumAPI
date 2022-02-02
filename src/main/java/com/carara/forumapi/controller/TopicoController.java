@@ -2,6 +2,7 @@ package com.carara.forumapi.controller;
 
 import com.carara.forumapi.dto.DetalhesTopicoDto;
 import com.carara.forumapi.dto.TopicoDto;
+import com.carara.forumapi.form.AtualizacaoTopicoForm;
 import com.carara.forumapi.form.TopicoForm;
 import com.carara.forumapi.model.Topico;
 import com.carara.forumapi.repository.CursoRepository;
@@ -11,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.transaction.TransactionScoped;
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -27,10 +30,10 @@ public class TopicoController {
 
     @GetMapping
     public List<TopicoDto> listAll(String nomeCurso) {
-        if(nomeCurso==null){
+        if (nomeCurso == null) {
             List<Topico> topicoList = topicoRepository.findAll();
             return TopicoDto.converter(topicoList);
-        }else{
+        } else {
             List<Topico> topicoList = topicoRepository.findByCurso_Nome(nomeCurso);
             return TopicoDto.converter(topicoList);
 
@@ -47,9 +50,20 @@ public class TopicoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DetalhesTopicoDto> detalhar(@PathVariable Long id){
+    public ResponseEntity<DetalhesTopicoDto> detalhar(@PathVariable Long id) {
         Optional<Topico> topico = topicoRepository.findById(id);
-        return topico.map(value -> ResponseEntity.ok(new DetalhesTopicoDto(value))).orElseGet(() -> ResponseEntity.notFound().build());
+        return topico.map(value -> ResponseEntity.ok(new DetalhesTopicoDto(value)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/{id}")
+    @Transactional
+    public ResponseEntity<TopicoDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoTopicoForm form) {
+        Optional<Topico> optional = topicoRepository.findById(id);
+        if (optional.isPresent()) {
+            Topico topico = form.atualizar(id, topicoRepository);
+            return ResponseEntity.ok(new TopicoDto(topico));
+        }
+        return ResponseEntity.notFound().build();
+    }
 }
