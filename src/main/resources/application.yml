@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: Forum API
+
+#Database
+  datasource:
+    url: jdbc:postgresql://localhost:5432/forumAPI
+    username: postgres
+    password: password
+
+#JPA properties
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true #corrige bug do hibernate dessa versão
