@@ -3,6 +3,8 @@ package com.carara.forumapi.controller;
 import com.carara.forumapi.Dto.TopicoDto;
 import com.carara.forumapi.model.Curso;
 import com.carara.forumapi.model.Topico;
+import com.carara.forumapi.repository.TopicoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -15,10 +17,13 @@ import java.util.List;
 @RequestMapping("/topicos")
 public class TopicoController {
 
+    @Autowired
+    private TopicoRepository repository;
+
     @GetMapping
     @ResponseBody
     public List<TopicoDto> listAll() {
-        Topico topico = new Topico("Duvida", "Duvida com spring", new Curso( "Spring", "Programação"));
-        return TopicoDto.converter(Arrays.asList(topico, topico, topico));
+        List<Topico> topicoList = repository.findAll();
+        return TopicoDto.converter(topicoList);
     }
 }

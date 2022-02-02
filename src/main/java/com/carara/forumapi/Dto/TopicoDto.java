@@ -1,11 +1,13 @@
 package com.carara.forumapi.Dto;
 
 import com.carara.forumapi.model.Topico;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Data
 public class TopicoDto {
 
     private Long id;
@@ -24,7 +26,6 @@ public class TopicoDto {
     public static List<TopicoDto> converter(List<Topico> topicos) {
         return topicos.stream().map(TopicoDto::new).collect(Collectors.toList());
     }
-
 
 }
 
