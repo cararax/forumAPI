@@ -1,5 +1,6 @@
 package com.carara.forumapi.controller;
 
+import com.carara.forumapi.dto.DetalhesTopicoDto;
 import com.carara.forumapi.dto.TopicoDto;
 import com.carara.forumapi.form.TopicoForm;
 import com.carara.forumapi.model.Topico;
@@ -10,10 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/topicos")
@@ -37,7 +38,6 @@ public class TopicoController {
     }
 
     @PostMapping
-    @Transactional
     public ResponseEntity<TopicoDto> cadastrar(@RequestBody @Valid TopicoForm form, UriComponentsBuilder uriBuilder) {
         Topico topico = form.converter(cursoRepository);
         topicoRepository.save(topico);
@@ -45,4 +45,11 @@ public class TopicoController {
         URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
         return ResponseEntity.created(uri).body(new TopicoDto(topico));
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<DetalhesTopicoDto> detalhar(@PathVariable Long id){
+        Optional<Topico> topico = topicoRepository.findById(id);
+        return topico.map(value -> ResponseEntity.ok(new DetalhesTopicoDto(value))).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
 }
