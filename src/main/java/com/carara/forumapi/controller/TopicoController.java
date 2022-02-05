@@ -8,6 +8,10 @@ import com.carara.forumapi.model.Topico;
 import com.carara.forumapi.repository.CursoRepository;
 import com.carara.forumapi.repository.TopicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -15,7 +19,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -28,12 +31,13 @@ public class TopicoController {
     private CursoRepository cursoRepository;
 
     @GetMapping
-    public List<TopicoDto> listAll(String nomeCurso) {
+    public Page<TopicoDto> listAll(@RequestParam(required = false) String nomeCurso,
+                                   @PageableDefault(sort = "id", direction = Sort.Direction.ASC) Pageable paginacao) {
         if (nomeCurso == null) {
-            List<Topico> topicoList = topicoRepository.findAll();
+            Page<Topico> topicoList = topicoRepository.findAll(paginacao);
             return TopicoDto.converter(topicoList);
         } else {
-            List<Topico> topicoList = topicoRepository.findByCurso_Nome(nomeCurso);
+            Page<Topico> topicoList = topicoRepository.findByCurso_Nome(nomeCurso, paginacao);
             return TopicoDto.converter(topicoList);
         }
     }
