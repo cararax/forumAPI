@@ -1,7 +1,13 @@
 package com.carara.forumapi.controller;
 
+import com.carara.forumapi.config.security.TokenService;
 import com.carara.forumapi.form.LoginForm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,8 +19,21 @@ import javax.validation.Valid;
 @RequestMapping("/auth")
 public class AutentcacaoController {
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private TokenService tokenService;
+
     @PostMapping
     public ResponseEntity<?> autenticar(@RequestBody @Valid LoginForm form) {
-        return ResponseEntity.ok().build();
+        UsernamePasswordAuthenticationToken dadosLogin = form.converter();
+        try {
+            Authentication authentication = authenticationManager.authenticate(dadosLogin);
+            String token = tokenService.gerarToken(authentication);
+            return ResponseEntity.ok().build();
+
+        } catch (AuthenticationException exception) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
