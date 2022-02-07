@@ -15,7 +15,16 @@ public class TokenService {
     private String expiration;
 
     @Value("${forum.jwt.secret}")
-    private String secret;
+    private static String secret = "forumAPI";
+
+    public static boolean isTokenValido(String token) {
+        try {
+            Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     public String gerarToken(Authentication authentication) {
         Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
