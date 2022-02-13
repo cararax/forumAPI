@@ -1,6 +1,11 @@
 spring:
   application:
     name: Forum API
+  #spring boot admin
+  boot:
+    admin:
+      client:
+        url: http://localhost:8081
 
   #Database
   datasource:
@@ -42,4 +47,3 @@ info:
     java:
       version: '@java.version@'
     description: '@project.description@'
-
